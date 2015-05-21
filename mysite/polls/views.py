@@ -1,5 +1,5 @@
 #from django.http import Http404
-
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
@@ -16,7 +16,7 @@ class IndexView(generic.ListView):
 
 	def get_queryset(self):
 		"""Return the last five published questions"""
-		return Question.objects.order_by('-pub-date')[:5]
+		return Question.objects.filter(pub_date_lte=timezone.now()).order_by('-pub_date[:5]')
 
 class DetailView(generic.DetailView):
 	model = Question
@@ -27,7 +27,7 @@ class ResultsView(generic.DetailView):
 	template_name = 'polls/results.html'
 
 def vote(request, question_id):
-	p = get_object_or_404(Question,pk=question_id)
+	p = get_object_or_404(Question, pk=question_id)
 	try:
 		selected_choice = p.choice_set.get(pk= request.POST['choice'])
 	except (KeyError, Choice.DoesNotExist):
